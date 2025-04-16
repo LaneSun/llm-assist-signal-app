@@ -94,13 +94,13 @@
           x: {
             title: {
               display: detailed,
-              text: isFrequencyDomain ? 'Frequency (Hz)' : 'Sample'
+              text: isFrequencyDomain ? '频率 (Hz)' : '样本'
             }
           },
           y: {
             title: {
               display: detailed,
-              text: 'Amplitude'
+              text: '幅度'
             }
           }
         },
@@ -125,7 +125,7 @@
 
   // Handle channel deletion
   function handleRemoveChannel(channelId) {
-    if (confirm('Are you sure you want to remove this channel?')) {
+    if (confirm('您确定要删除此通道吗？')) {
       removeChannel(channelId);
       if (selectedChannelId === channelId) {
         selectedChannelId = null;
@@ -142,7 +142,7 @@
 <div class="h-full">
   {#if $channels.length === 0}
     <div class="text-center py-8 text-muted-foreground">
-      <p>No channels available. Generate a signal first.</p>
+      <p>没有可用的通道。请先生成一个信号。</p>
     </div>
   {:else}
     <div class="space-y-4">
@@ -172,13 +172,13 @@
             
             <div class="grid grid-cols-3 gap-2 text-xs text-muted-foreground mb-2">
               <div>
-                <span class="font-medium">Length:</span> {channel.getStats().length}
+                <span class="font-medium">长度:</span> {channel.getStats().length}
               </div>
               <div>
-                <span class="font-medium">Rate:</span> {channel.sampleRate} Hz
+                <span class="font-medium">采样率:</span> {channel.sampleRate} Hz
               </div>
               <div>
-                <span class="font-medium">Duration:</span> {channel.getStats().duration.toFixed(3)} s
+                <span class="font-medium">持续时间:</span> {channel.getStats().duration.toFixed(3)} s
               </div>
             </div>
             
@@ -193,7 +193,7 @@
         {#each $channels as channel (channel.id)}
           {#if channel.id === selectedChannelId}
             <div class="border rounded-md p-4 mb-4">
-              <h3 class="text-lg font-semibold mb-4">{channel.name} Details</h3>
+              <h3 class="text-lg font-semibold mb-4">{channel.name} 详情</h3>
               
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div class="space-y-1">
@@ -202,23 +202,23 @@
                 </div>
                 
                 <div class="space-y-1">
-                  <div class="text-xs text-muted-foreground">Created</div>
+                  <div class="text-xs text-muted-foreground">创建时间</div>
                   <div class="text-sm">{formatDate(channel.createdAt)}</div>
                 </div>
                 
                 <div class="space-y-1">
-                  <div class="text-xs text-muted-foreground">Updated</div>
+                  <div class="text-xs text-muted-foreground">更新时间</div>
                   <div class="text-sm">{formatDate(channel.updatedAt)}</div>
                 </div>
                 
                 <div class="space-y-1">
-                  <div class="text-xs text-muted-foreground">Sample Rate</div>
+                  <div class="text-xs text-muted-foreground">采样率</div>
                   <div class="text-sm">{channel.sampleRate} Hz</div>
                 </div>
                 
                 <div class="space-y-1">
                   <div class="text-xs text-muted-foreground">Length</div>
-                  <div class="text-sm">{channel.getStats().length} samples</div>
+                  <div class="text-sm">{channel.getStats().length} 个样本</div>
                 </div>
                 
                 <div class="space-y-1">
@@ -227,24 +227,24 @@
                 </div>
                 
                 <div class="space-y-1">
-                  <div class="text-xs text-muted-foreground">Min/Max</div>
+                  <div class="text-xs text-muted-foreground">最小值/最大值</div>
                   <div class="text-sm">{channel.getStats().min.toFixed(3)} / {channel.getStats().max.toFixed(3)}</div>
                 </div>
                 
                 <div class="space-y-1">
-                  <div class="text-xs text-muted-foreground">Mean/RMS</div>
+                  <div class="text-xs text-muted-foreground">平均值/均方根</div>
                   <div class="text-sm">{channel.getStats().mean.toFixed(3)} / {channel.getStats().rms.toFixed(3)}</div>
                 </div>
                 
                 {#if channel.processingMethod}
                   <div class="space-y-1 col-span-2">
-                    <div class="text-xs text-muted-foreground">Processing</div>
+                    <div class="text-xs text-muted-foreground">处理方法</div>
                     <div class="text-sm">{channel.processingMethod}</div>
                   </div>
                   
                   {#if channel.sourceChannelIds.length > 0}
                     <div class="space-y-1 col-span-2">
-                      <div class="text-xs text-muted-foreground">Source</div>
+                      <div class="text-xs text-muted-foreground">源通道</div>
                       <div class="text-sm">
                         {#each channel.sourceChannelIds as sourceId}
                           {#each $channels as sourceChannel}

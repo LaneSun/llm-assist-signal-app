@@ -10,12 +10,19 @@ export default defineConfig({
     cors: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
+      'X-Frame-Options': 'ALLOWALL'
     },
-    strictPort: true,
-    allowedHosts: [
-      'work-1-wlchmmxscsqcgsuy.prod-runtime.all-hands.dev',
-      'work-2-wlchmmxscsqcgsuy.prod-runtime.all-hands.dev',
-      'localhost'
-    ],
+    strictPort: false,
+    hmr: {
+      clientPort: 443
+    },
+    watch: {
+      usePolling: true
+    }
   },
+  preview: {
+    port: 12000,
+    host: '0.0.0.0',
+    allowedHosts: true
+  }
 })

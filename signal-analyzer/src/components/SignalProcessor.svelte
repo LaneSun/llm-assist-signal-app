@@ -5,13 +5,13 @@
 
   // Available processing methods
   const processingMethods = [
-    { id: 'movingAverage', name: 'Moving Average', processor: processors.movingAverage, params: ['windowSize'] },
-    { id: 'lowPass', name: 'Low-Pass Filter', processor: processors.lowPassFilter, params: ['cutoffFrequency', 'sampleRate'] },
-    { id: 'highPass', name: 'High-Pass Filter', processor: processors.highPassFilter, params: ['cutoffFrequency', 'sampleRate'] },
+    { id: 'movingAverage', name: '移动平均', processor: processors.movingAverage, params: ['windowSize'] },
+    { id: 'lowPass', name: '低通滤波器', processor: processors.lowPassFilter, params: ['cutoffFrequency', 'sampleRate'] },
+    { id: 'highPass', name: '高通滤波器', processor: processors.highPassFilter, params: ['cutoffFrequency', 'sampleRate'] },
     { id: 'fft', name: 'FFT', processor: processors.calculateFFT, params: [] },
-    { id: 'powerSpectrum', name: 'Power Spectrum', processor: processors.calculatePowerSpectrum, params: ['sampleRate'] },
-    { id: 'differentiate', name: 'Differentiate', processor: processors.differentiate, params: ['sampleRate'] },
-    { id: 'integrate', name: 'Integrate', processor: processors.integrate, params: ['sampleRate'] }
+    { id: 'powerSpectrum', name: '功率谱', processor: processors.calculatePowerSpectrum, params: ['sampleRate'] },
+    { id: 'differentiate', name: '微分', processor: processors.differentiate, params: ['sampleRate'] },
+    { id: 'integrate', name: '积分', processor: processors.integrate, params: ['sampleRate'] }
   ];
 
   // Form values
@@ -80,14 +80,14 @@
     <div class="grid gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-2">
-          <label for="sourceChannel" class="text-sm font-medium">Source Channel</label>
+          <label for="sourceChannel" class="text-sm font-medium">源通道</label>
           <select 
             id="sourceChannel" 
             bind:value={selectedChannelId} 
             required
             class="w-full px-3 py-2 border rounded-md border-input bg-background"
           >
-            <option value="">Select a channel</option>
+            <option value="">选择一个通道</option>
             {#each $channels as channel}
               <option value={channel.id}>{channel.name}</option>
             {/each}
@@ -95,7 +95,7 @@
         </div>
         
         <div class="space-y-2">
-          <label for="processingMethod" class="text-sm font-medium">Processing Method</label>
+          <label for="processingMethod" class="text-sm font-medium">处理方法</label>
           <select 
             id="processingMethod" 
             bind:value={selectedMethod}
@@ -109,7 +109,7 @@
       </div>
       
       <div class="space-y-2">
-        <label for="newChannelName" class="text-sm font-medium">New Channel Name</label>
+        <label for="newChannelName" class="text-sm font-medium">新通道名称</label>
         <input 
           id="newChannelName" 
           type="text" 
@@ -121,7 +121,7 @@
       
       {#if selectedMethod && selectedMethod.params.includes('windowSize')}
         <div class="space-y-2">
-          <label for="windowSize" class="text-sm font-medium">Window Size</label>
+          <label for="windowSize" class="text-sm font-medium">窗口大小</label>
           <input 
             id="windowSize" 
             type="number" 
@@ -135,7 +135,7 @@
       
       {#if selectedMethod && selectedMethod.params.includes('cutoffFrequency')}
         <div class="space-y-2">
-          <label for="cutoffFrequency" class="text-sm font-medium">Cutoff Frequency (Hz)</label>
+          <label for="cutoffFrequency" class="text-sm font-medium">截止频率 (Hz)</label>
           <input 
             id="cutoffFrequency" 
             type="number" 
@@ -149,6 +149,6 @@
       {/if}
     </div>
     
-    <Button type="submit" disabled={!selectedChannelId} class="w-full">Process Signal</Button>
+    <Button type="submit" disabled={!selectedChannelId} class="w-full">处理信号</Button>
   </form>
 </div>
