@@ -6,7 +6,7 @@
   import { Tabs, TabsList, TabsTrigger, TabsContent } from './lib/components/ui/tabs';
 </script>
 
-<div class="min-h-screen bg-background flex flex-col">
+<div class="h-screen bg-background flex flex-col overflow-hidden">
   <header class="border-b flex-none">
     <div class="container py-4">
       <h1 class="text-3xl font-bold tracking-tight">Signal Analyzer</h1>
@@ -15,19 +15,19 @@
   </header>
 
   <main class="flex-1 flex flex-col overflow-hidden min-h-0">
-    <div class="flex-1 flex flex-col min-h-0">
+    <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
       <Resizable initialLeftWidth={65} minLeftWidth={30} maxLeftWidth={80}>
-        <div slot="left" class="h-full flex flex-col min-h-0">
+        <div slot="left" class="h-full flex-1 flex flex-col min-h-0 overflow-hidden">
           <div class="border-b p-4 flex-none">
             <h2 class="text-xl font-semibold">Channels</h2>
             <p class="text-sm text-muted-foreground">View and manage signal channels</p>
           </div>
-          <div class="flex-1 overflow-auto p-4 min-h-0">
+          <div class="flex-1 min-h-0 overflow-auto p-4">
             <ChannelViewer />
           </div>
         </div>
         
-        <div slot="right" class="h-full flex flex-col min-h-0">
+        <div slot="right" class="h-full flex-1 flex flex-col min-h-0">
           <div class="border-b p-4 flex-none">
             <h2 class="text-xl font-semibold">Signal Operations</h2>
             <p class="text-sm text-muted-foreground">Generate and process signals</p>
