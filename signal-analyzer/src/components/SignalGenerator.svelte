@@ -5,17 +5,17 @@
 
   // Available signal types
   const signalTypes = [
-    { id: 'sine', name: 'Sine Wave', generator: generators.generateSineWave },
-    { id: 'square', name: 'Square Wave', generator: generators.generateSquareWave },
-    { id: 'triangle', name: 'Triangle Wave', generator: generators.generateTriangleWave },
-    { id: 'sawtooth', name: 'Sawtooth Wave', generator: generators.generateSawtoothWave },
-    { id: 'noise', name: 'White Noise', generator: generators.generateWhiteNoise },
-    { id: 'pulse', name: 'Pulse', generator: generators.generatePulse }
+    { id: 'sine', name: '正弦波', generator: generators.generateSineWave },
+    { id: 'square', name: '方波', generator: generators.generateSquareWave },
+    { id: 'triangle', name: '三角波', generator: generators.generateTriangleWave },
+    { id: 'sawtooth', name: '锯齿波', generator: generators.generateSawtoothWave },
+    { id: 'noise', name: '白噪声', generator: generators.generateWhiteNoise },
+    { id: 'pulse', name: '脉冲', generator: generators.generatePulse }
   ];
 
   // Form values
   let selectedSignalType = signalTypes[0];
-  let channelName = 'New Signal';
+  let channelName = '新信号';
   let sampleRate = 1000;
   let length = 1000;
   let frequency = 10;
@@ -56,7 +56,7 @@
     const channel = addChannel(channelName, signalData, sampleRate);
     
     // Reset form
-    channelName = 'New Signal';
+    channelName = '新信号';
   }
 </script>
 
@@ -65,7 +65,7 @@
     <div class="grid gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-2">
-          <label for="channelName" class="text-sm font-medium">Channel Name</label>
+          <label for="channelName" class="text-sm font-medium">通道名称</label>
           <input 
             id="channelName" 
             type="text" 
@@ -76,7 +76,7 @@
         </div>
         
         <div class="space-y-2">
-          <label for="signalType" class="text-sm font-medium">Signal Type</label>
+          <label for="signalType" class="text-sm font-medium">信号类型</label>
           <select 
             id="signalType" 
             bind:value={selectedSignalType}
@@ -91,7 +91,7 @@
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="space-y-2">
-          <label for="sampleRate" class="text-sm font-medium">Sample Rate (Hz)</label>
+          <label for="sampleRate" class="text-sm font-medium">采样率 (Hz)</label>
           <input 
             id="sampleRate" 
             type="number" 
@@ -103,7 +103,7 @@
         </div>
         
         <div class="space-y-2">
-          <label for="length" class="text-sm font-medium">Length (samples)</label>
+          <label for="length" class="text-sm font-medium">长度 (样本数)</label>
           <input 
             id="length" 
             type="number" 
@@ -115,7 +115,7 @@
         </div>
         
         <div class="space-y-2">
-          <label for="amplitude" class="text-sm font-medium">Amplitude</label>
+          <label for="amplitude" class="text-sm font-medium">幅度</label>
           <input 
             id="amplitude" 
             type="number" 
@@ -130,7 +130,7 @@
       {#if selectedSignalType.id === 'sine' || selectedSignalType.id === 'square' || 
            selectedSignalType.id === 'triangle' || selectedSignalType.id === 'sawtooth'}
         <div class="space-y-2">
-          <label for="frequency" class="text-sm font-medium">Frequency (Hz)</label>
+          <label for="frequency" class="text-sm font-medium">频率 (Hz)</label>
           <input 
             id="frequency" 
             type="number" 
@@ -145,7 +145,7 @@
       
       {#if selectedSignalType.id === 'sine'}
         <div class="space-y-2">
-          <label for="phase" class="text-sm font-medium">Phase (radians)</label>
+          <label for="phase" class="text-sm font-medium">相位 (弧度)</label>
           <input 
             id="phase" 
             type="number" 
@@ -158,7 +158,7 @@
       
       {#if selectedSignalType.id === 'square'}
         <div class="space-y-2">
-          <label for="dutyCycle" class="text-sm font-medium">Duty Cycle (0-1)</label>
+          <label for="dutyCycle" class="text-sm font-medium">占空比 (0-1)</label>
           <input 
             id="dutyCycle" 
             type="number" 
@@ -175,7 +175,7 @@
       {#if selectedSignalType.id === 'pulse'}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label for="pulsePosition" class="text-sm font-medium">Pulse Position (sample)</label>
+            <label for="pulsePosition" class="text-sm font-medium">脉冲 Position (sample)</label>
             <input 
               id="pulsePosition" 
               type="number" 
@@ -188,7 +188,7 @@
           </div>
           
           <div class="space-y-2">
-            <label for="pulseWidth" class="text-sm font-medium">Pulse Width (samples)</label>
+            <label for="pulseWidth" class="text-sm font-medium">脉冲 Width (samples)</label>
             <input 
               id="pulseWidth" 
               type="number" 
@@ -202,6 +202,6 @@
       {/if}
     </div>
     
-    <Button type="submit" class="w-full">Generate Signal</Button>
+    <Button type="submit" class="w-full">生成信号</Button>
   </form>
 </div>
