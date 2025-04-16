@@ -2,70 +2,52 @@
   import SignalGenerator from './components/SignalGenerator.svelte';
   import SignalProcessor from './components/SignalProcessor.svelte';
   import ChannelViewer from './components/ChannelViewer.svelte';
+  import Resizable from './components/ui/Resizable.svelte';
+  import { Tabs, TabsList, TabsTrigger, TabsContent } from './lib/components/ui/tabs';
 </script>
 
-<main>
-  <header>
-    <h1>Signal Analyzer</h1>
-    <p>Generate, process, and analyze signals</p>
+<div class="min-h-screen bg-background flex flex-col">
+  <header class="border-b flex-none">
+    <div class="container py-4">
+      <h1 class="text-3xl font-bold tracking-tight">Signal Analyzer</h1>
+      <p class="text-muted-foreground">Generate, process, and analyze signals</p>
+    </div>
   </header>
 
-  <div class="app-container">
-    <div class="tools-panel">
-      <SignalGenerator />
-      <SignalProcessor />
+  <main class="flex-1 flex flex-col overflow-hidden min-h-0">
+    <div class="flex-1 flex flex-col min-h-0">
+      <Resizable initialLeftWidth={65} minLeftWidth={30} maxLeftWidth={80}>
+        <div slot="left" class="h-full flex flex-col min-h-0">
+          <div class="border-b p-4 flex-none">
+            <h2 class="text-xl font-semibold">Channels</h2>
+            <p class="text-sm text-muted-foreground">View and manage signal channels</p>
+          </div>
+          <div class="flex-1 overflow-auto p-4 min-h-0">
+            <ChannelViewer />
+          </div>
+        </div>
+        
+        <div slot="right" class="h-full flex flex-col min-h-0">
+          <div class="border-b p-4 flex-none">
+            <h2 class="text-xl font-semibold">Signal Operations</h2>
+            <p class="text-sm text-muted-foreground">Generate and process signals</p>
+          </div>
+          <div class="flex-1 overflow-auto p-4 min-h-0">
+            <Tabs defaultValue="generate" class="w-full">
+              <TabsList class="grid grid-cols-2 w-full sticky top-0 bg-background z-10">
+                <TabsTrigger value="generate">Generate Signal</TabsTrigger>
+                <TabsTrigger value="process">Process Signal</TabsTrigger>
+              </TabsList>
+              <TabsContent value="generate" class="mt-2">
+                <SignalGenerator />
+              </TabsContent>
+              <TabsContent value="process" class="mt-2">
+                <SignalProcessor />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </Resizable>
     </div>
-    
-    <ChannelViewer />
-  </div>
-</main>
-
-<style>
-  :global(body) {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
-    color: #333;
-  }
-  
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  h1 {
-    margin-bottom: 0.5rem;
-    color: #2c3e50;
-  }
-  
-  header p {
-    color: #7f8c8d;
-    margin-top: 0;
-  }
-  
-  .app-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .tools-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  
-  @media (min-width: 768px) {
-    .tools-panel > :global(*) {
-      flex: 1;
-      min-width: 300px;
-    }
-  }
-</style>
+  </main>
+</div>

@@ -1,6 +1,7 @@
 <script>
   import { channels, processChannel } from '../lib/stores.js';
   import * as processors from '../lib/SignalProcessors.js';
+  import { Button } from '../lib/components/ui/button';
 
   // Available processing methods
   const processingMethods = [
@@ -74,98 +75,80 @@
   }
 </script>
 
-<div class="signal-processor">
-  <h2>Signal Processor</h2>
-  
-  <form on:submit|preventDefault={processSignal}>
-    <div class="form-group">
-      <label for="sourceChannel">Source Channel</label>
-      <select id="sourceChannel" bind:value={selectedChannelId} required>
-        <option value="">Select a channel</option>
-        {#each $channels as channel}
-          <option value={channel.id}>{channel.name}</option>
-        {/each}
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="processingMethod">Processing Method</label>
-      <select id="processingMethod" bind:value={selectedMethod}>
-        {#each processingMethods as method}
-          <option value={method}>{method.name}</option>
-        {/each}
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="newChannelName">New Channel Name</label>
-      <input id="newChannelName" type="text" bind:value={newChannelName} required />
-    </div>
-    
-    {#if selectedMethod && selectedMethod.params.includes('windowSize')}
-      <div class="form-group">
-        <label for="windowSize">Window Size</label>
-        <input id="windowSize" type="number" bind:value={windowSize} min="1" required />
+<div class="space-y-4 py-4">
+  <form on:submit|preventDefault={processSignal} class="space-y-4">
+    <div class="grid gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label for="sourceChannel" class="text-sm font-medium">Source Channel</label>
+          <select 
+            id="sourceChannel" 
+            bind:value={selectedChannelId} 
+            required
+            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+          >
+            <option value="">Select a channel</option>
+            {#each $channels as channel}
+              <option value={channel.id}>{channel.name}</option>
+            {/each}
+          </select>
+        </div>
+        
+        <div class="space-y-2">
+          <label for="processingMethod" class="text-sm font-medium">Processing Method</label>
+          <select 
+            id="processingMethod" 
+            bind:value={selectedMethod}
+            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+          >
+            {#each processingMethods as method}
+              <option value={method}>{method.name}</option>
+            {/each}
+          </select>
+        </div>
       </div>
-    {/if}
-    
-    {#if selectedMethod && selectedMethod.params.includes('cutoffFrequency')}
-      <div class="form-group">
-        <label for="cutoffFrequency">Cutoff Frequency (Hz)</label>
-        <input id="cutoffFrequency" type="number" bind:value={cutoffFrequency} min="0.1" step="0.1" required />
+      
+      <div class="space-y-2">
+        <label for="newChannelName" class="text-sm font-medium">New Channel Name</label>
+        <input 
+          id="newChannelName" 
+          type="text" 
+          bind:value={newChannelName} 
+          required 
+          class="w-full px-3 py-2 border rounded-md border-input bg-background"
+        />
       </div>
-    {/if}
+      
+      {#if selectedMethod && selectedMethod.params.includes('windowSize')}
+        <div class="space-y-2">
+          <label for="windowSize" class="text-sm font-medium">Window Size</label>
+          <input 
+            id="windowSize" 
+            type="number" 
+            bind:value={windowSize} 
+            min="1" 
+            required 
+            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+          />
+        </div>
+      {/if}
+      
+      {#if selectedMethod && selectedMethod.params.includes('cutoffFrequency')}
+        <div class="space-y-2">
+          <label for="cutoffFrequency" class="text-sm font-medium">Cutoff Frequency (Hz)</label>
+          <input 
+            id="cutoffFrequency" 
+            type="number" 
+            bind:value={cutoffFrequency} 
+            min="0.1" 
+            step="0.1" 
+            required 
+            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+          />
+        </div>
+      {/if}
+    </div>
     
-    <button type="submit" disabled={!selectedChannelId}>Process Signal</button>
+    <Button type="submit" disabled={!selectedChannelId} class="w-full">Process Signal</Button>
   </form>
 </div>
-
-<style>
-  .signal-processor {
-    background-color: #f0f8ff;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-  }
-  
-  h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
-  
-  .form-group {
-    margin-bottom: 0.75rem;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-weight: 500;
-  }
-  
-  input, select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    background-color: #2196f3;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  button:hover {
-    background-color: #0b7dda;
-  }
-  
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-</style>

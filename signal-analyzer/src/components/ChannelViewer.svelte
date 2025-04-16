@@ -2,6 +2,8 @@
   import { onMount, afterUpdate } from 'svelte';
   import { channels, removeChannel } from '../lib/stores.js';
   import Chart from 'chart.js/auto';
+  import { Button } from '../lib/components/ui/button';
+  import { Card, CardContent } from '../lib/components/ui/card';
 
   // Selected channel for detailed view
   let selectedChannelId = null;
@@ -137,41 +139,51 @@
   }
 </script>
 
-<div class="channel-viewer">
-  <h2>Channels</h2>
-  
+<div class="h-full">
   {#if $channels.length === 0}
-    <p>No channels available. Generate a signal first.</p>
+    <div class="text-center py-8 text-muted-foreground">
+      <p>No channels available. Generate a signal first.</p>
+    </div>
   {:else}
-    <div class="channels-container">
-      <div class="channels-list">
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 gap-4 mb-4">
         {#each $channels as channel (channel.id)}
           <div 
-            class="channel-card" 
-            class:selected={selectedChannelId === channel.id} 
+            class="border rounded-md p-4 {selectedChannelId === channel.id ? 'border-primary bg-primary/5' : 'border-border'} cursor-pointer hover:bg-accent/50 transition-colors"
             on:click={() => selectChannel(channel.id)}
             on:keydown={e => e.key === 'Enter' && selectChannel(channel.id)}
             role="button"
             tabindex="0"
             aria-pressed={selectedChannelId === channel.id}
           >
-            <div class="channel-header">
-              <h3>{channel.name}</h3>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-medium">{channel.name}</h3>
               <button 
-                class="delete-btn" 
-                on:click|stopPropagation={() => handleRemoveChannel(channel.id)}
+                class="h-8 w-8 flex items-center justify-center rounded-full text-destructive hover:bg-destructive/10"
+                on:click={(e) => {
+                  e.stopPropagation();
+                  handleRemoveChannel(channel.id);
+                }}
                 aria-label="Delete channel {channel.name}"
-              >×</button>
+              >
+                <span class="text-xl">×</span>
+              </button>
             </div>
             
-            <div class="channel-stats">
-              <p><strong>Length:</strong> {channel.getStats().length} samples</p>
-              <p><strong>Sample Rate:</strong> {channel.sampleRate} Hz</p>
-              <p><strong>Duration:</strong> {channel.getStats().duration.toFixed(3)} s</p>
+            <div class="grid grid-cols-3 gap-2 text-xs text-muted-foreground mb-2">
+              <div>
+                <span class="font-medium">Length:</span> {channel.getStats().length}
+              </div>
+              <div>
+                <span class="font-medium">Rate:</span> {channel.sampleRate} Hz
+              </div>
+              <div>
+                <span class="font-medium">Duration:</span> {channel.getStats().duration.toFixed(3)} s
+              </div>
             </div>
             
-            <div class="channel-preview">
-              <canvas id={`chart-${channel.id}`} height="80"></canvas>
+            <div class="h-20">
+              <canvas id={`chart-${channel.id}`}></canvas>
             </div>
           </div>
         {/each}
@@ -180,34 +192,60 @@
       {#if selectedChannelId}
         {#each $channels as channel (channel.id)}
           {#if channel.id === selectedChannelId}
-            <div class="channel-detail">
-              <h3>{channel.name}</h3>
+            <div class="border rounded-md p-4 mb-4">
+              <h3 class="text-lg font-semibold mb-4">{channel.name} Details</h3>
               
-              <div class="detail-stats">
-                <div class="stat-group">
-                  <p><strong>ID:</strong> {channel.id}</p>
-                  <p><strong>Created:</strong> {formatDate(channel.createdAt)}</p>
-                  <p><strong>Updated:</strong> {formatDate(channel.updatedAt)}</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">ID</div>
+                  <div class="text-sm font-medium truncate">{channel.id}</div>
                 </div>
                 
-                <div class="stat-group">
-                  <p><strong>Length:</strong> {channel.getStats().length} samples</p>
-                  <p><strong>Sample Rate:</strong> {channel.sampleRate} Hz</p>
-                  <p><strong>Duration:</strong> {channel.getStats().duration.toFixed(3)} s</p>
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Created</div>
+                  <div class="text-sm">{formatDate(channel.createdAt)}</div>
                 </div>
                 
-                <div class="stat-group">
-                  <p><strong>Min:</strong> {channel.getStats().min.toFixed(3)}</p>
-                  <p><strong>Max:</strong> {channel.getStats().max.toFixed(3)}</p>
-                  <p><strong>Mean:</strong> {channel.getStats().mean.toFixed(3)}</p>
-                  <p><strong>RMS:</strong> {channel.getStats().rms.toFixed(3)}</p>
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Updated</div>
+                  <div class="text-sm">{formatDate(channel.updatedAt)}</div>
+                </div>
+                
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Sample Rate</div>
+                  <div class="text-sm">{channel.sampleRate} Hz</div>
+                </div>
+                
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Length</div>
+                  <div class="text-sm">{channel.getStats().length} samples</div>
+                </div>
+                
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Duration</div>
+                  <div class="text-sm">{channel.getStats().duration.toFixed(3)} s</div>
+                </div>
+                
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Min/Max</div>
+                  <div class="text-sm">{channel.getStats().min.toFixed(3)} / {channel.getStats().max.toFixed(3)}</div>
+                </div>
+                
+                <div class="space-y-1">
+                  <div class="text-xs text-muted-foreground">Mean/RMS</div>
+                  <div class="text-sm">{channel.getStats().mean.toFixed(3)} / {channel.getStats().rms.toFixed(3)}</div>
                 </div>
                 
                 {#if channel.processingMethod}
-                  <div class="stat-group">
-                    <p><strong>Processing:</strong> {channel.processingMethod}</p>
-                    {#if channel.sourceChannelIds.length > 0}
-                      <p><strong>Source:</strong> 
+                  <div class="space-y-1 col-span-2">
+                    <div class="text-xs text-muted-foreground">Processing</div>
+                    <div class="text-sm">{channel.processingMethod}</div>
+                  </div>
+                  
+                  {#if channel.sourceChannelIds.length > 0}
+                    <div class="space-y-1 col-span-2">
+                      <div class="text-xs text-muted-foreground">Source</div>
+                      <div class="text-sm">
                         {#each channel.sourceChannelIds as sourceId}
                           {#each $channels as sourceChannel}
                             {#if sourceChannel.id === sourceId}
@@ -215,14 +253,14 @@
                             {/if}
                           {/each}
                         {/each}
-                      </p>
-                    {/if}
-                  </div>
+                      </div>
+                    </div>
+                  {/if}
                 {/if}
               </div>
               
-              <div class="detail-chart">
-                <canvas id="detail-chart" height="300"></canvas>
+              <div class="h-64 mt-4">
+                <canvas id="detail-chart"></canvas>
               </div>
             </div>
           {/if}
@@ -231,103 +269,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .channel-viewer {
-    margin-top: 2rem;
-  }
-  
-  .channels-container {
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .channels-list {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-  
-  .channel-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .channel-card:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .channel-card.selected {
-    border-color: #2196f3;
-    background-color: #e3f2fd;
-  }
-  
-  .channel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  
-  .channel-header h3 {
-    margin: 0;
-    font-size: 1rem;
-  }
-  
-  .delete-btn {
-    background: none;
-    border: none;
-    color: #f44336;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  }
-  
-  .channel-stats {
-    font-size: 0.8rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .channel-stats p {
-    margin: 0.25rem 0;
-  }
-  
-  .channel-preview {
-    height: 80px;
-  }
-  
-  .channel-detail {
-    flex: 2;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-  
-  .detail-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .stat-group {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .stat-group p {
-    margin: 0.25rem 0;
-  }
-  
-  .detail-chart {
-    height: 300px;
-    margin-top: 1rem;
-  }
-</style>
