@@ -16,7 +16,7 @@
 
   // Form values
   let selectedMethod = processingMethods[0];
-  let selectedChannelId = '';
+  export let selectedChannelId = '';
   let newChannelName = '';
   let windowSize = 10;
   let cutoffFrequency = 100;
