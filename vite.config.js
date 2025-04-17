@@ -13,9 +13,6 @@ export default defineConfig({
       'X-Frame-Options': 'ALLOWALL'
     },
     strictPort: false,
-    hmr: {
-      clientPort: 443
-    },
     watch: {
       usePolling: true
     }

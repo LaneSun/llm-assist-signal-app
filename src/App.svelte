@@ -4,6 +4,8 @@
   import ChannelViewer from './components/ChannelViewer.svelte';
   import Resizable from './components/ui/Resizable.svelte';
   import { Tabs, TabsList, TabsTrigger, TabsContent } from './lib/components/ui/tabs';
+
+  let selectedChannelId = $state();
 </script>
 
 <div class="h-screen bg-background flex flex-col overflow-hidden">
@@ -22,8 +24,8 @@
             <h2 class="text-xl font-semibold">通道</h2>
             <p class="text-sm text-muted-foreground">查看和管理信号通道</p>
           </div>
-          <div class="flex-1 min-h-0 overflow-auto p-4">
-            <ChannelViewer />
+          <div class="flex-1 min-h-0 overflow-hidden flex">
+            <ChannelViewer bind:selectedChannelId />
           </div>
         </div>
 
@@ -34,7 +36,7 @@
           </div>
           <div class="flex-1 overflow-auto p-4 min-h-0">
             <Tabs defaultValue="generate" class="w-full">
-              <TabsList class="grid grid-cols-2 w-full sticky top-0 bg-background z-10">
+              <TabsList class="grid grid-cols-2 w-full sticky top-0 z-10">
                 <TabsTrigger value="generate">生成信号</TabsTrigger>
                 <TabsTrigger value="process">处理信号</TabsTrigger>
               </TabsList>
@@ -42,7 +44,7 @@
                 <SignalGenerator />
               </TabsContent>
               <TabsContent value="process" class="mt-2">
-                <SignalProcessor />
+                <SignalProcessor bind:selectedChannelId />
               </TabsContent>
             </Tabs>
           </div>

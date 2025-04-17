@@ -13,9 +13,15 @@
     { id: 'pulse', name: '脉冲', generator: generators.generatePulse }
   ];
 
+  let s_index = 1;
+
+  function getChannelName() {
+    return '信号 ' + s_index++;
+  }
+
   // Form values
   let selectedSignalType = signalTypes[0];
-  let channelName = '新信号';
+  let channelName = getChannelName();
   let sampleRate = 1000;
   let length = 1000;
   let frequency = 10;
@@ -56,7 +62,7 @@
     const channel = addChannel(channelName, signalData, sampleRate);
     
     // Reset form
-    channelName = '新信号';
+    channelName = getChannelName();
   }
 </script>
 
