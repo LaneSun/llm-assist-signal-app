@@ -5,6 +5,12 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/llm-assist-signal-app/' : '/',
   plugins: [svelte()],
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    assetsDir: 'assets',
+    sourcemap: false
+  },
   server: {
     host: '0.0.0.0',
     port: 12000,
