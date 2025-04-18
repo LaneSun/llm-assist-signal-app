@@ -56,11 +56,6 @@
       marked.setOptions({
         gfm: true, // GitHub风格的Markdown
         breaks: true, // 将换行符转换为<br>
-        mangle: false, // 不转义标题中的HTML
-        sanitize: false, // 不进行HTML净化（我们使用Svelte的@html，它会自动转义）
-        smartLists: true, // 使用更智能的列表行为
-        smartypants: true, // 使用更智能的标点符号
-        xhtml: false // 不使用自闭合的XHTML标签
       });
       
       return marked.parse(content);
@@ -71,11 +66,21 @@
   }
 </script>
 
-<div class="flex-1 flex flex-col min-h-0 overflow-hidden">
-  <div class="flex-1 overflow-y-auto overflow-x-hidden py-4 min-h-0 border-t" bind:this={chatContainer}>
-    {#if $chatHistory.length === 0}
-      <div class="flex items-center justify-center text-muted-foreground">
-        <p>开始与 AI 助手对话</p>
+<div class="box-fill">
+  <div class="box-scroll overflow-y-auto overflow-x-hidden py-4 border-t" bind:this={chatContainer}>
+    {#if $chatHistory.length <= 1} <!-- 只有系统提示时 -->
+      <div class="box items-center justify-center h-full text-muted-foreground space-y-4 p-4">
+        <p class="text-lg font-medium">开始与 AI 助手对话</p>
+        <div class="max-w-md bg-teal-50 p-4 rounded-lg border border-teal-200">
+          <p class="text-sm text-teal-800 font-medium mb-2">提示：</p>
+          <p class="text-sm text-teal-700">你可以让AI助手帮你生成和处理信号，例如：</p>
+          <ul class="list-disc pl-5 text-sm text-teal-700 mt-2 space-y-1">
+            <li>生成一个频率为50Hz的正弦波信号</li>
+            <li>对ID为xxx的信号进行低通滤波</li>
+            <li>列出所有可用的信号通道</li>
+            <li>获取ID为xxx的信号通道的详细信息</li>
+          </ul>
+        </div>
       </div>
     {:else}
       <div class="space-y-4">
@@ -86,7 +91,7 @@
                 <div class="self-start shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm">
                   {message.role === 'user' ? '我' : 'AI'}
                 </div>
-                <div class="flex-1 flex flex-col justify-center">
+                <div class="flex-1 box justify-center">
                   <div class="markdown-content break-words overflow-wrap-anywhere" 
                        style="--message-role: {message.role === 'user' ? 'user' : 'assistant'}"
                        >{@html renderMarkdown(message.content)}</div>
@@ -128,7 +133,7 @@
           }}
         ></textarea>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="box gap-2">
         <Button type="submit" disabled={isLoading || !userMessage.trim()}>
           <Send class="h-4 w-4 mr-2" />
           发送

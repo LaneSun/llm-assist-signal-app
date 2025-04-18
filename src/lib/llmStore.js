@@ -14,7 +14,21 @@ export const defaultConfig = {
 export const llmConfig = writable(defaultConfig);
 
 // Store for chat history
-export const chatHistory = writable([]);
+export const chatHistory = writable([
+  // Add system prompt
+  {
+    role: 'system',
+    content: `You are a signal processing assistant that can help users generate and process signals. You can use the following tools:
+
+1. generate_signal - Generate a new signal channel
+2. process_signal - Process an existing signal and create a new channel
+3. list_channels - List all available signal channels
+4. get_channel_info - Get detailed information about a specific signal channel
+
+When a user requests to generate or process signals, please use the appropriate tool instead of answering directly. For example, if a user asks to generate a sine wave, call the generate_signal tool.`,
+    timestamp: new Date()
+  }
+]);
 
 /**
  * Add a message to the chat history
@@ -31,5 +45,36 @@ export function addMessage(role, content) {
  * Clear the chat history
  */
 export function clearChatHistory() {
-  chatHistory.set([]);
+  chatHistory.set([
+    // Restore system prompt when clearing
+    {
+      role: 'system',
+      content: `You are a signal processing assistant that can help users generate and process signals. You can use the following tools:
+
+1. generate_signal - Generate a new signal channel
+2. process_signal - Process an existing signal and create a new channel
+3. list_channels - List all available signal channels
+4. get_channel_info - Get detailed information about a specific signal channel
+
+When a user requests to generate or process signals, please use the appropriate tool instead of answering directly. For example, if a user asks to generate a sine wave, call the generate_signal tool.`,
+      timestamp: new Date()
+    }
+  ]);
+}
+
+/**
+ * Update the LLM configuration
+ * @param {Object} newConfig - New configuration object
+ */
+export function updateLLMConfig(newConfig) {
+  llmConfig.update(config => {
+    return { ...config, ...newConfig };
+  });
+}
+
+/**
+ * Reset the LLM configuration to defaults
+ */
+export function resetLLMConfig() {
+  llmConfig.set(defaultConfig);
 }

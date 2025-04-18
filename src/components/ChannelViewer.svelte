@@ -145,15 +145,15 @@
   }
 </script>
 
-<div class="flex-1 flex flex-col overflow-hidden min-h-0">
+<div class="box-fill">
   {#if $channels.length === 0}
     <div class="text-center py-8 text-muted-foreground">
       <p>没有可用的通道。请先生成一个信号。</p>
     </div>
   {:else}
     <Resizable initialLeftWidth={40} minLeftWidth={30} maxLeftWidth={70}>
-      <div slot="left" class="overflow-auto min-h-0 h-full">
-        <div class="flex flex-col">
+      <div slot="left" class="box-scroll h-full">
+        <div class="box">
           {#each $channels as channel (channel.id)}
             <div
               class="p-2 {selectedChannelId === channel.id
@@ -187,7 +187,7 @@
         </div>
       </div>
 
-      <div slot="right" class="overflow-auto min-h-0 h-full p-4">
+      <div slot="right" class="box-scroll h-full p-4">
         {#if selectedChannelId}
           {#each $channels as channel (channel.id)}
             {#if channel.id === selectedChannelId}

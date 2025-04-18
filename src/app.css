@@ -79,10 +79,30 @@
 }
 
 @layer utilities {
+  /* Layout utility classes */
   .overflow-wrap-anywhere {
     overflow-wrap: anywhere;
     word-break: break-word;
     hyphens: auto;
+  }
+  
+  .box {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .box-fill {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  
+  .box-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
   }
 }
 
