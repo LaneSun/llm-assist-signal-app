@@ -12,38 +12,21 @@ import { getOpenAITools, executeToolFunction } from './signalTools';
 function createLLMInstance() {
   const config = get(llmConfig);
   
-  switch (config.provider) {
-    case 'openai':
-      return new ChatOpenAI({
-        openAIApiKey: config.apiKey,
-        modelName: config.model,
-        temperature: config.temperature,
-        maxTokens: config.maxTokens,
-        ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
-        // Add tools support
-        tools: getOpenAITools()
-      });
-    
-    case 'anthropic':
-      return new ChatAnthropic({
-        anthropicApiKey: config.apiKey,
-        modelName: config.model,
-        temperature: config.temperature,
-        maxTokens: config.maxTokens
-      });
-    
-    case 'deepseek':
-      return new ChatDeepSeek({
-        apiKey: config.apiKey,
-        modelName: config.model,
-        temperature: config.temperature,
-        maxTokens: config.maxTokens,
-        ...(config.baseUrl ? { baseURL: config.baseUrl } : {})
-      });
-    
-    default:
-      throw new Error(`Unsupported LLM provider: ${config.provider}`);
+  const LLM_MAP = {
+    "openai": ChatOpenAI,
+    "anthropic": ChatAnthropic,
+    "deepseek": ChatDeepSeek,
   }
+
+  const llm = new LLM_MAP[config.provider]({
+    apiKey: config.apiKey,
+    modelName: config.model,
+    temperature: config.temperature,
+    maxTokens: config.maxTokens,
+    ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
+  }).bindTools(getOpenAITools());
+  
+  return llm;
 }
 
 /**
