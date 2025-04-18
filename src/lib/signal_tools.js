@@ -1,71 +1,16 @@
-import * as SignalGenerators from './SignalGenerators';
-import * as SignalProcessors from './SignalProcessors';
+import { tool } from '@langchain/core/tools';
+import * as SignalGenerators from './signal_generators';
+import * as SignalProcessors from './signal_processors';
 import { addChannel, getChannelById, processChannel, channels } from './stores';
 import { get } from 'svelte/store';
+import { z } from 'zod';
 
 /**
  * 定义可供AI调用的工具函数
  */
 export const signalTools = [
-  {
-    name: "generate_signal",
-    description: "生成一个新的信号通道",
-    parameters: {
-      type: "object",
-      properties: {
-        name: {
-          type: "string",
-          description: "信号通道的名称"
-        },
-        signal_type: {
-          type: "string",
-          enum: ["sine", "square", "triangle", "sawtooth", "noise", "pulse"],
-          description: "信号类型：正弦波(sine)、方波(square)、三角波(triangle)、锯齿波(sawtooth)、噪声(noise)、脉冲(pulse)"
-        },
-        length: {
-          type: "integer",
-          description: "信号长度（样本数）",
-          default: 1000
-        },
-        sample_rate: {
-          type: "integer",
-          description: "采样率（Hz）",
-          default: 1000
-        },
-        amplitude: {
-          type: "number",
-          description: "信号幅度",
-          default: 1
-        },
-        frequency: {
-          type: "number",
-          description: "信号频率（Hz），仅适用于周期性信号",
-          default: 10
-        },
-        phase: {
-          type: "number",
-          description: "相位（弧度），仅适用于正弦波",
-          default: 0
-        },
-        duty_cycle: {
-          type: "number",
-          description: "占空比（0-1），仅适用于方波",
-          default: 0.5
-        },
-        pulse_position: {
-          type: "integer",
-          description: "脉冲位置（样本索引），仅适用于脉冲信号",
-          default: 500
-        },
-        pulse_width: {
-          type: "integer",
-          description: "脉冲宽度（样本数），仅适用于脉冲信号",
-          default: 10
-        }
-      },
-      required: ["name", "signal_type"]
-    },
-    function: async (args) => {
+  tool(
+    async args => {
       const { 
         name, 
         signal_type, 
@@ -114,42 +59,28 @@ export const signalTools = [
         signal_type: signal_type,
         message: `成功生成${name}信号通道，ID: ${channel.id}`
       };
-    }
-  },
-  
-  {
-    name: "process_signal",
-    description: "处理现有信号并创建新的信号通道",
-    parameters: {
-      type: "object",
-      properties: {
-        source_channel_id: {
-          type: "string",
-          description: "源信号通道的ID"
-        },
-        new_channel_name: {
-          type: "string",
-          description: "新信号通道的名称"
-        },
-        processor_type: {
-          type: "string",
-          enum: ["moving_average", "low_pass", "high_pass", "fft", "differentiate", "integrate"],
-          description: "处理器类型：移动平均(moving_average)、低通滤波(low_pass)、高通滤波(high_pass)、FFT(fft)、微分(differentiate)、积分(integrate)"
-        },
-        window_size: {
-          type: "integer",
-          description: "移动平均窗口大小，仅适用于移动平均处理器",
-          default: 10
-        },
-        cutoff_frequency: {
-          type: "number",
-          description: "截止频率（Hz），仅适用于低通和高通滤波器",
-          default: 50
-        }
-      },
-      required: ["source_channel_id", "new_channel_name", "processor_type"]
     },
-    function: async (args) => {
+    {
+      name: "generate_signal",
+      description: "生成一个新的信号通道",
+      schema: z.object({
+        name: z.string().describe("信号通道的名称"),
+        signal_type: z.enum(["sine", "square", "triangle", "sawtooth", "noise", "pulse"])
+          .describe("信号类型：正弦波(sine)、方波(square)、三角波(triangle)、锯齿波(sawtooth)、噪声(noise)、脉冲(pulse)"),
+        length: z.number().int().default(1000).describe("信号长度（样本数）"),
+        sample_rate: z.number().int().default(1000).describe("采样率（Hz）"),
+        amplitude: z.number().default(1).describe("信号幅度"),
+        frequency: z.number().default(10).describe("信号频率（Hz），仅适用于周期性信号"),
+        phase: z.number().default(0).describe("相位（弧度），仅适用于正弦波"),
+        duty_cycle: z.number().default(0.5).describe("占空比（0-1），仅适用于方波"),
+        pulse_position: z.number().int().default(500).describe("脉冲位置（样本索引），仅适用于脉冲信号"),
+        pulse_width: z.number().int().default(10).describe("脉冲宽度（样本数），仅适用于脉冲信号"),
+      }),
+    }
+  ),
+  
+  tool(
+    async args => {
       const { 
         source_channel_id, 
         new_channel_name, 
@@ -204,18 +135,23 @@ export const signalTools = [
         length: newChannel.data.length,
         message: `成功处理信号并创建新通道${new_channel_name}，ID: ${newChannel.id}`
       };
-    }
-  },
-  
-  {
-    name: "list_channels",
-    description: "列出所有可用的信号通道",
-    parameters: {
-      type: "object",
-      properties: {},
-      required: []
     },
-    function: async () => {
+    {
+      name: "process_signal",
+      description: "处理现有信号并创建新的信号通道",
+      schema: z.object({
+        source_channel_id: z.string().describe("源信号通道的ID"),
+        new_channel_name: z.string().describe("新信号通道的名称"),
+        processor_type: z.enum(["moving_average", "low_pass", "high_pass", "fft", "differentiate", "integrate"])
+          .describe("处理器类型：移动平均(moving_average)、低通滤波(low_pass)、高通滤波(high_pass)、FFT(fft)、微分(differentiate)、积分(integrate)"),
+        window_size: z.number().int().default(10).describe("移动平均窗口大小，仅适用于移动平均处理器"),
+        cutoff_frequency: z.number().default(50).describe("截止频率（Hz），仅适用于低通和高通滤波器"),
+      }),
+    }
+  ),
+  
+  tool(
+    async () => {
       // 获取当前所有通道
       const allChannels = get(channels);
       
@@ -232,23 +168,16 @@ export const signalTools = [
         count: allChannels.length,
         message: `找到${allChannels.length}个信号通道`
       };
-    }
-  },
-  
-  {
-    name: "get_channel_info",
-    description: "获取特定信号通道的详细信息",
-    parameters: {
-      type: "object",
-      properties: {
-        channel_id: {
-          type: "string",
-          description: "信号通道的ID"
-        }
-      },
-      required: ["channel_id"]
     },
-    function: async (args) => {
+    {
+      name: "list_channels",
+      description: "列出所有可用的信号通道",
+      schema: z.object({}).describe("无需参数"),
+    }
+  ),
+  
+  tool(
+    async args => {
       const { channel_id } = args;
       
       const channel = getChannelById(channel_id);
@@ -270,32 +199,22 @@ export const signalTools = [
         stats: stats,
         message: `成功获取通道${channel.name}的信息`
       };
+    },
+    {
+      name: "get_channel_info",
+      description: "获取特定信号通道的详细信息",
+      schema: z.object({
+        channel_id: z.string().describe("信号通道的ID"),
+      }),
     }
-  }
-];
-
-/**
- * 将工具函数转换为OpenAI工具格式
- */
-export function getOpenAITools() {
-  return signalTools.map(tool => ({
-    type: "function",
-    function: {
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.parameters
-    }
-  }));
-}
-
-/**
- * 执行工具函数
- */
-export async function executeToolFunction(name, args) {
-  const tool = signalTools.find(t => t.name === name);
-  if (!tool) {
-    throw new Error(`找不到名为${name}的工具函数`);
-  }
+  ),
   
-  return await tool.function(args);
-}
+  tool(
+    async () => "正在等待用户输入",
+    {
+      name: "await_user_input",
+      description: "等待用户输入",
+      schema: z.void(),
+    }
+  )
+];

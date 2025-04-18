@@ -1,10 +1,8 @@
 <script>
   import { onMount, afterUpdate } from "svelte";
-  import { channels, removeChannel } from "../lib/stores.js";
+  import { channels, removeChannel } from "$lib/stores.js";
   import Chart from "chart.js/auto";
-  import Resizable from "./ui/Resizable.svelte";
-  import { Button } from "../lib/components/ui/button";
-  import { Card, CardContent } from "../lib/components/ui/card";
+  import { ResizablePaneGroup, ResizablePane, ResizableHandle } from "$lib/components/ui/resizable";
 
   // Selected channel for detailed view
   export let selectedChannelId = null;
@@ -151,8 +149,8 @@
       <p>没有可用的通道。请先生成一个信号。</p>
     </div>
   {:else}
-    <Resizable initialLeftWidth={40} minLeftWidth={30} maxLeftWidth={70}>
-      <div slot="left" class="box-scroll h-full">
+    <ResizablePaneGroup direction="horizontal" class="box-fill">
+      <ResizablePane class="box-scroll h-full" minSize={20}>
         <div class="box">
           {#each $channels as channel (channel.id)}
             <div
@@ -185,9 +183,11 @@
             </div>
           {/each}
         </div>
-      </div>
+      </ResizablePane>
+      
+      <ResizableHandle withHandle />
 
-      <div slot="right" class="box-scroll h-full p-4">
+      <ResizablePane class="box-scroll h-full p-4" minSize={20}>
         {#if selectedChannelId}
           {#each $channels as channel (channel.id)}
             {#if channel.id === selectedChannelId}
@@ -279,7 +279,7 @@
             <p>请选择一个通道以查看详情。</p>
           </div>
         {/if}
-      </div>
-    </Resizable>
+      </ResizablePane>
+    </ResizablePaneGroup>
   {/if}
 </div>

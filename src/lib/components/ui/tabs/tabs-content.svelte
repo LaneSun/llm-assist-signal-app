@@ -1,33 +1,15 @@
-<script lang="ts">
-  import { getContext } from "svelte";
-  import { cn } from "../../../utils";
-  import type { Writable } from "svelte/store";
+<script>
+	import { Tabs as TabsPrimitive } from "bits-ui";
+	import { cn } from "$lib/utils.js";
 
-  type TabsValue = string;
-
-  let className = "";
-  export { className as class };
-  export let value: TabsValue;
-
-  const { selectedTabValue } = getContext<{
-    selectedTabValue: Writable<TabsValue>;
-  }>("tabs");
-
-  let selected: boolean;
-  $: selected = $selectedTabValue === value;
+	let { ref = $bindable(null), class: className, ...restProps } = $props();
 </script>
 
-<div
-  role="tabpanel"
-  id={`${value}-tab`}
-  aria-labelledby={`${value}-trigger`}
-  tabindex={0}
-  class={cn(
-    "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    !selected && "!hidden",
-    className
-  )}
-  {...$$restProps}
->
-  <slot />
-</div>
+<TabsPrimitive.Content
+	bind:ref
+	class={cn(
+		"ring-offset-background focus-visible:ring-ring mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+		className
+	)}
+	{...restProps}
+/>

@@ -1,7 +1,8 @@
 <script>
-  import { channels, processChannel } from '../lib/stores.js';
-  import * as processors from '../lib/SignalProcessors.js';
-  import { Button } from '../lib/components/ui/button';
+  import { channels, processChannel } from '$lib/stores.js';
+  import * as processors from '$lib/signal_processors.js';
+  import { Button } from '$lib/components/ui/button';
+    import Input from '$lib/components/ui/input/input.svelte';
 
   // Available processing methods
   const processingMethods = [
@@ -75,11 +76,11 @@
   }
 </script>
 
-<div class="box space-y-4 py-4">
+<div class="box gap-4">
   <form onsubmit={(e) => { e.preventDefault(); processSignal(); }} class="box space-y-4">
     <div class="grid gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="sourceChannel" class="text-sm font-medium">源通道</label>
           <select 
             id="sourceChannel" 
@@ -94,7 +95,7 @@
           </select>
         </div>
         
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="processingMethod" class="text-sm font-medium">处理方法</label>
           <select 
             id="processingMethod" 
@@ -108,42 +109,39 @@
         </div>
       </div>
       
-      <div class="space-y-2">
+      <div class="box gap-2">
         <label for="newChannelName" class="text-sm font-medium">新通道名称</label>
-        <input 
+        <Input
           id="newChannelName" 
           type="text" 
           bind:value={newChannelName} 
           required 
-          class="w-full px-3 py-2 border rounded-md border-input bg-background"
         />
       </div>
       
       {#if selectedMethod && selectedMethod.params.includes('windowSize')}
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="windowSize" class="text-sm font-medium">窗口大小</label>
-          <input 
+          <Input 
             id="windowSize" 
             type="number" 
             bind:value={windowSize} 
             min="1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
       {/if}
       
       {#if selectedMethod && selectedMethod.params.includes('cutoffFrequency')}
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="cutoffFrequency" class="text-sm font-medium">截止频率 (Hz)</label>
-          <input 
+          <Input 
             id="cutoffFrequency" 
             type="number" 
             bind:value={cutoffFrequency} 
             min="0.1" 
             step="0.1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
       {/if}

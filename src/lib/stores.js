@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { Channel } from './Channel';
+import { Channel } from './channel';
 
 // Store for all channels
 export const channels = writable([]);

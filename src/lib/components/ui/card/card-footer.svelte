@@ -1,13 +1,9 @@
-<script lang="ts">
-  import { cn } from "../../../utils";
+<script>
+	import { cn } from "$lib/utils.js";
 
-  let className = "";
-  export { className as class };
+	let { ref = $bindable(null), class: className, children, ...restProps } = $props();
 </script>
 
-<div
-  class={cn("flex items-center p-6 pt-0", className)}
-  {...$$restProps}
->
-  <slot />
+<div bind:this={ref} class={cn("flex items-center p-6 pt-0", className)} {...restProps}>
+	{@render children?.()}
 </div>

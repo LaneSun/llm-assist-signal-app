@@ -1,10 +1,11 @@
 <script>
-  import { defaultConfig, llmConfig } from "../lib/llmStore";
-  import { getAvailableModels, getAvailableProviders } from "../lib/llmService";
-  import { Button } from "../lib/components/ui/button";
+  import { defaultConfig, llmConfig } from "$lib/llm_store";
+  import { getAvailableModels, getAvailableProviders } from "$lib/llm_service";
+  import { Button } from "$lib/components/ui/button";
   import { RotateCcw } from "lucide-svelte";
+    import Input from "$lib/components/ui/input/input.svelte";
 
-  let formData = $state(defaultConfig);
+  let formData = $state($llmConfig);
   const providers = getAvailableProviders();
   let models = $derived(getAvailableModels(formData));
 
@@ -20,14 +21,14 @@
   })
 </script>
 
-<div class="box space-y-4 py-4">
-  <div class="space-y-2">
+<div class="box gap-4">
+  <div class="box gap-2">
     <h2 class="text-xl font-semibold">LLM 配置</h2>
     <p class="text-sm text-muted-foreground">配置 LLM 提供商和模型设置</p>
   </div>
 
-  <div class="box space-y-4">
-    <div class="space-y-2">
+  <div class="box gap-4">
+    <div class="box gap-2">
       <label for="provider" class="text-sm font-medium">提供商</label>
       <select
         id="provider"
@@ -40,7 +41,7 @@
       </select>
     </div>
 
-    <div class="space-y-2">
+    <div class="box gap-2">
       <label for="model" class="text-sm font-medium">模型</label>
       <select
         id="model"
@@ -53,54 +54,50 @@
       </select>
     </div>
 
-    <div class="space-y-2">
+    <div class="box gap-2">
       <label for="apiKey" class="text-sm font-medium">API 密钥</label>
-      <input
+      <Input
         id="apiKey"
         type="password"
         bind:value={formData.apiKey}
         placeholder="输入 API 密钥"
-        class="w-full p-2 border rounded-md"
       />
     </div>
 
-    <div class="space-y-2">
+    <div class="box gap-2">
       <label for="temperature" class="text-sm font-medium"
         >温度 ({formData.temperature})</label
       >
-      <input
+      <Input
         id="temperature"
         type="range"
         bind:value={formData.temperature}
         min="0"
         max="1"
         step="0.1"
-        class="w-full"
       />
     </div>
 
-    <div class="space-y-2">
+    <div class="box gap-2">
       <label for="maxTokens" class="text-sm font-medium">最大 Token 数</label>
-      <input
+      <Input
         id="maxTokens"
         type="number"
         bind:value={formData.maxTokens}
         min="1"
         max="4000"
-        class="w-full p-2 border rounded-md"
       />
     </div>
 
-    <div class="space-y-2">
+    <div class="box gap-2">
       <label for="baseUrl" class="text-sm font-medium"
         >自定义 API 端点 (可选)</label
       >
-      <input
+      <Input
         id="baseUrl"
         type="text"
         bind:value={formData.baseUrl}
         placeholder="https://api.example.com/v1"
-        class="w-full p-2 border rounded-md"
       />
     </div>
   </div>

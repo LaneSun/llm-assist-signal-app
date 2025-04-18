@@ -1,11 +1,20 @@
 <script>
-  import SignalGenerator from './components/SignalGenerator.svelte';
-  import SignalProcessor from './components/SignalProcessor.svelte';
-  import ChannelViewer from './components/ChannelViewer.svelte';
-  import ChatTab from './components/ChatTab.svelte';
-  import ConfigTab from './components/ConfigTab.svelte';
-  import Resizable from './components/ui/Resizable.svelte';
-  import { Tabs, TabsList, TabsTrigger, TabsContent } from './lib/components/ui/tabs';
+  import SignalGenerator from "./SignalGenerator.svelte";
+  import SignalProcessor from "./SignalProcessor.svelte";
+  import ChannelViewer from "./ChannelViewer.svelte";
+  import ChatTab from "./ChatTab.svelte";
+  import ConfigTab from "./ConfigTab.svelte";
+  import {
+    ResizablePaneGroup,
+    ResizablePane,
+    ResizableHandle,
+  } from "$lib/components/ui/resizable";
+  import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+  } from "$lib/components/ui/tabs";
 
   let selectedChannelId = $state();
 </script>
@@ -20,8 +29,8 @@
 
   <main class="box-fill">
     <div class="box-fill">
-      <Resizable initialLeftWidth={65} minLeftWidth={30} maxLeftWidth={80}>
-        <div slot="left" class="h-full box-fill">
+      <ResizablePaneGroup direction="horizontal" class="box-fill">
+        <ResizablePane class="h-full box-fill" minSize={50} defaultSize={65}>
           <div class="border-b p-4 flex-none">
             <h2 class="text-xl font-semibold">通道</h2>
             <p class="text-sm text-muted-foreground">查看和管理信号通道</p>
@@ -29,37 +38,39 @@
           <div class="flex-1 min-h-0 overflow-hidden flex">
             <ChannelViewer bind:selectedChannelId />
           </div>
-        </div>
+        </ResizablePane>
 
-        <div slot="right" class="h-full box-fill">
+        <ResizableHandle withHandle />
+
+        <ResizablePane class="h-full box-fill" minSize={20}>
           <div class="border-b p-4 flex-none">
             <h2 class="text-xl font-semibold">信号操作</h2>
             <p class="text-sm text-muted-foreground">生成和处理信号</p>
           </div>
-          <div class="p-4 box-fill">
-            <Tabs defaultValue="generate" class="box-fill">
-              <TabsList class="grid grid-cols-4">
+          <div class="box-fill">
+            <Tabs value="generate" class="box-fill">
+              <TabsList class="m-4 mb-2 grid grid-cols-4">
                 <TabsTrigger value="generate">生成信号</TabsTrigger>
                 <TabsTrigger value="process">处理信号</TabsTrigger>
                 <TabsTrigger value="chat">AI 助手</TabsTrigger>
                 <TabsTrigger value="config">LLM 配置</TabsTrigger>
               </TabsList>
-              <TabsContent value="generate" class="mt-2 box-scroll">
+              <TabsContent value="generate" class="box-scroll border-t p-4">
                 <SignalGenerator />
               </TabsContent>
-              <TabsContent value="process" class="mt-2 box-scroll">
+              <TabsContent value="process" class="box-scroll border-t p-4">
                 <SignalProcessor bind:selectedChannelId />
               </TabsContent>
-              <TabsContent value="chat" class="mt-2 box-fill">
+              <TabsContent value="chat" class="box-fill border-t">
                 <ChatTab />
               </TabsContent>
-              <TabsContent value="config" class="mt-2 box-scroll">
+              <TabsContent value="config" class="box-scroll border-t p-4">
                 <ConfigTab />
               </TabsContent>
             </Tabs>
           </div>
-        </div>
-      </Resizable>
+        </ResizablePane>
+      </ResizablePaneGroup>
     </div>
   </main>
 </div>
