@@ -10,7 +10,7 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-    "deploy": "NODE_ENV=production vite build && touch dist/.nojekyll"
+    "deploy": "NODE_ENV=production vite build && touch build/.nojekyll"
   },
   "devDependencies": {
     "@lucide/svelte": "^0.488.0",
