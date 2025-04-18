@@ -2,6 +2,8 @@
   import SignalGenerator from './components/SignalGenerator.svelte';
   import SignalProcessor from './components/SignalProcessor.svelte';
   import ChannelViewer from './components/ChannelViewer.svelte';
+  import ChatTab from './components/ChatTab.svelte';
+  import ConfigTab from './components/ConfigTab.svelte';
   import Resizable from './components/ui/Resizable.svelte';
   import { Tabs, TabsList, TabsTrigger, TabsContent } from './lib/components/ui/tabs';
 
@@ -29,22 +31,30 @@
           </div>
         </div>
 
-        <div slot="right" class="h-full flex-1 flex flex-col min-h-0">
+        <div slot="right" class="h-full flex-1 flex flex-col min-h-0 overflow-hidden">
           <div class="border-b p-4 flex-none">
             <h2 class="text-xl font-semibold">信号操作</h2>
             <p class="text-sm text-muted-foreground">生成和处理信号</p>
           </div>
-          <div class="flex-1 overflow-auto p-4 min-h-0">
-            <Tabs defaultValue="generate" class="w-full">
-              <TabsList class="grid grid-cols-2 w-full sticky top-0 z-10">
+          <div class="flex-1 p-4 flex flex-col min-h-0 overflow-hidden">
+            <Tabs defaultValue="generate" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <TabsList class="grid grid-cols-4">
                 <TabsTrigger value="generate">生成信号</TabsTrigger>
                 <TabsTrigger value="process">处理信号</TabsTrigger>
+                <TabsTrigger value="chat">AI 助手</TabsTrigger>
+                <TabsTrigger value="config">LLM 配置</TabsTrigger>
               </TabsList>
-              <TabsContent value="generate" class="mt-2">
+              <TabsContent value="generate" class="mt-2 flex-1 flex-col min-h-0 overflow-auto">
                 <SignalGenerator />
               </TabsContent>
-              <TabsContent value="process" class="mt-2">
+              <TabsContent value="process" class="mt-2 flex-1 flex-col min-h-0 overflow-auto">
                 <SignalProcessor bind:selectedChannelId />
+              </TabsContent>
+              <TabsContent value="chat" class="mt-2 flex-1 flex-col min-h-0 overflow-hidden">
+                <ChatTab />
+              </TabsContent>
+              <TabsContent value="config" class="mt-2 flex-1 flex-col min-h-0 overflow-auto">
+                <ConfigTab />
               </TabsContent>
             </Tabs>
           </div>
