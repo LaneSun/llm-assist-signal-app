@@ -4,7 +4,7 @@
   import { Button } from "../lib/components/ui/button";
   import { RotateCcw } from "lucide-svelte";
 
-  let formData = $state(defaultConfig);
+  let formData = $state($llmConfig);
   const providers = getAvailableProviders();
   let models = $derived(getAvailableModels(formData));
 

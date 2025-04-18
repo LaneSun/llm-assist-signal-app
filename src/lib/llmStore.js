@@ -1,3 +1,4 @@
+import { persisted } from 'svelte-persisted-store';
 import { writable } from 'svelte/store';
 
 // Default LLM configuration
@@ -11,10 +12,10 @@ export const defaultConfig = {
 };
 
 // Store for LLM configuration
-export const llmConfig = writable(defaultConfig);
+export const llmConfig = persisted('llm-assist-signal-app::llm_config', defaultConfig);
 
 // Store for chat history
-export const chatHistory = writable([
+export const chatHistory = persisted('llm-assist-signal-app::chat_history', [
   // Add system prompt
   {
     role: 'system',
