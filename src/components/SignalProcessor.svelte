@@ -75,8 +75,8 @@
   }
 </script>
 
-<div class="space-y-4 py-4">
-  <form on:submit|preventDefault={processSignal} class="space-y-4">
+<div class="box space-y-4 py-4">
+  <form onsubmit={(e) => { e.preventDefault(); processSignal(); }} class="box space-y-4">
     <div class="grid gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-2">

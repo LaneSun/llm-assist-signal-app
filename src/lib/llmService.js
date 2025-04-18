@@ -3,6 +3,7 @@ import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatDeepSeek } from '@langchain/deepseek';
 import { get } from 'svelte/store';
 import { llmConfig } from './llmStore';
+import { getOpenAITools, executeToolFunction } from './signalTools';
 
 /**
  * Create an LLM instance based on the current configuration
@@ -18,7 +19,9 @@ function createLLMInstance() {
         modelName: config.model,
         temperature: config.temperature,
         maxTokens: config.maxTokens,
-        ...(config.baseUrl ? { baseURL: config.baseUrl } : {})
+        ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
+        // Add tools support
+        tools: getOpenAITools()
       });
     
     case 'anthropic':
@@ -52,6 +55,7 @@ function createLLMInstance() {
 export async function sendMessage(message, history = []) {
   try {
     const llm = createLLMInstance();
+    const config = get(llmConfig);
     
     // Format history for LangChain
     const formattedHistory = history.map(msg => ({
@@ -67,6 +71,70 @@ export async function sendMessage(message, history = []) {
     
     // Get response from LLM
     const response = await llm.invoke(formattedHistory);
+    
+    // Check if the response contains tool calls
+    if (response.tool_calls && response.tool_calls.length > 0) {
+      // Process tool calls
+      const toolResults = [];
+      
+      for (const toolCall of response.tool_calls) {
+        try {
+          const { name, arguments: args } = toolCall.function;
+          const parsedArgs = JSON.parse(args);
+          
+          // Execute the tool function
+          const result = await executeToolFunction(name, parsedArgs);
+          toolResults.push({
+            name,
+            result
+          });
+        } catch (error) {
+          toolResults.push({
+            name: toolCall.function.name,
+            error: error.message
+          });
+        }
+      }
+      
+      // Format tool results as markdown
+      let toolResultsMarkdown = "### 执行结果\n\n";
+      toolResults.forEach(result => {
+        if (result.error) {
+          toolResultsMarkdown += `**${result.name}**: 执行失败 - ${result.error}\n\n`;
+        } else {
+          toolResultsMarkdown += `**${result.name}**: ${result.result.message}\n\n`;
+          
+          // Add additional details based on the tool
+          if (result.name === 'generate_signal' || result.name === 'process_signal') {
+            toolResultsMarkdown += `- 通道ID: \`${result.result.channel_id}\`\n`;
+            toolResultsMarkdown += `- 通道名称: ${result.result.name}\n`;
+            toolResultsMarkdown += `- 样本数: ${result.result.length}\n`;
+          } else if (result.name === 'list_channels') {
+            toolResultsMarkdown += "| ID | 名称 | 长度 | 采样率 |\n";
+            toolResultsMarkdown += "|---|------|------|--------|\n";
+            result.result.channels.forEach(channel => {
+              toolResultsMarkdown += `| \`${channel.id}\` | ${channel.name} | ${channel.length} | ${channel.sample_rate} |\n`;
+            });
+          } else if (result.name === 'get_channel_info') {
+            toolResultsMarkdown += `- 通道ID: \`${result.result.id}\`\n`;
+            toolResultsMarkdown += `- 通道名称: ${result.result.name}\n`;
+            toolResultsMarkdown += `- 样本数: ${result.result.length}\n`;
+            toolResultsMarkdown += `- 采样率: ${result.result.sample_rate} Hz\n`;
+            toolResultsMarkdown += `- 处理方法: ${result.result.processing_method || '无'}\n`;
+            toolResultsMarkdown += `- 统计信息:\n`;
+            toolResultsMarkdown += `  - 最小值: ${result.result.stats.min}\n`;
+            toolResultsMarkdown += `  - 最大值: ${result.result.stats.max}\n`;
+            toolResultsMarkdown += `  - 均值: ${result.result.stats.mean}\n`;
+            toolResultsMarkdown += `  - RMS: ${result.result.stats.rms}\n`;
+          }
+          
+          toolResultsMarkdown += "\n";
+        }
+      });
+      
+      // Return the original response content followed by tool results
+      return response.content + "\n\n" + toolResultsMarkdown;
+    }
     
     return response.content;
   } catch (error) {

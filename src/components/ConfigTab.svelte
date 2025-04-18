@@ -20,13 +20,13 @@
   })
 </script>
 
-<div class="space-y-4 py-4">
+<div class="box space-y-4 py-4">
   <div class="space-y-2">
     <h2 class="text-xl font-semibold">LLM 配置</h2>
     <p class="text-sm text-muted-foreground">配置 LLM 提供商和模型设置</p>
   </div>
 
-  <div class="space-y-4">
+  <div class="box space-y-4">
     <div class="space-y-2">
       <label for="provider" class="text-sm font-medium">提供商</label>
       <select
