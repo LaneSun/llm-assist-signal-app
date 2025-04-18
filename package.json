@@ -4,19 +4,22 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
     "deploy": "NODE_ENV=production vite build && touch dist/.nojekyll"
   },
   "devDependencies": {
-		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/kit": "^2.16.0",
+    "@lucide/svelte": "^0.488.0",
+    "@sveltejs/adapter-auto": "^4.0.0",
+    "@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
-		"@tailwindcss/vite": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "bits-ui": "^1.3.19",
+    "paneforge": "^1.0.0-next.5",
     "svelte": "^5.20.2",
     "vite": "^6.2.5"
   },
@@ -39,7 +42,9 @@
     "shadcn-svelte": "^1.0.0-next.9",
     "svelte-persisted-store": "^0.12.0",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss": "^3.0.0",
+    "tailwind-variants": "^1.0.0",
+    "tailwindcss": "^4.0.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.3"
   }
 }

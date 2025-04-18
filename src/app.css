@@ -1,6 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
+
+@utility overflow-wrap-anywhere {
+  /* Layout utility classes */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+@utility box {
+  display: flex;
+  flex-direction: column;
+}
+
+@utility box-fill {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@utility box-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
 
 @layer base {
   :root {
@@ -72,6 +98,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -79,30 +106,9 @@
 }
 
 @layer utilities {
-  /* Layout utility classes */
-  .overflow-wrap-anywhere {
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
-  }
-  
-  .box {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .box-fill {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-  
-  .box-scroll {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
+
+  select:focus {
+    @apply border-primary outline-none;
   }
 }
 

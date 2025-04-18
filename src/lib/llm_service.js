@@ -12,7 +12,7 @@ import { HumanMessage } from '@langchain/core/messages';
  */
 function createLLMInstance() {
   const config = get(llmConfig);
-  
+
   const LLM_MAP = {
     "openai": ChatOpenAI,
     "anthropic": ChatAnthropic,
@@ -26,7 +26,7 @@ function createLLMInstance() {
     maxTokens: config.maxTokens,
     ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
   }).bindTools(signalTools);
-  
+
   return llm;
 }
 
@@ -40,17 +40,22 @@ export async function sendMessage(message) {
     const llm = createLLMInstance();
 
     addMessage(new HumanMessage(message));
-    
-    // Get response from LLM
-    const response = await llm.invoke(get(chatHistory));
-    
-    // Check if the response contains tool calls
-    if (response.tool_calls && response.tool_calls.length > 0) {
-      for (const toolCall of response.tool_calls) {
-        const { name } = toolCall;
-        const tool = signalTools.find(t => t.name === name);
-        const result = await tool.invoke(toolCall);
-        addMessage(result);
+
+    loop: while (true) {
+      // Get response from LLM
+      const response = await llm.invoke(get(chatHistory));
+
+      addMessage(response);
+
+      // Check if the response contains tool calls
+      if (response.tool_calls && response.tool_calls.length > 0) {
+        for (const toolCall of response.tool_calls) {
+          const { name } = toolCall;
+          const tool = signalTools.find(t => t.name === name);
+          const result = await tool.invoke(toolCall);
+          addMessage(result);
+          if (name === "await_user_input") break loop;
+        }
       }
     }
   } catch (error) {
@@ -64,7 +69,7 @@ export async function sendMessage(message) {
  * @returns {Array} List of available models
  */
 export function getAvailableModels(config) {
-  
+
   switch (config.provider) {
     case 'openai':
       return [
@@ -72,21 +77,21 @@ export function getAvailableModels(config) {
         'gpt-4',
         'gpt-4-turbo'
       ];
-    
+
     case 'anthropic':
       return [
         'claude-3-opus-20240229',
         'claude-3-sonnet-20240229',
         'claude-3-haiku-20240307'
       ];
-    
+
     case 'deepseek':
       return [
         'deepseek-reasoner',
         'deepseek-chat',
         'deepseek-coder'
       ];
-    
+
     default:
       return [];
   }

@@ -207,5 +207,14 @@ export const signalTools = [
         channel_id: z.string().describe("信号通道的ID"),
       }),
     }
+  ),
+  
+  tool(
+    async () => "正在等待用户输入",
+    {
+      name: "await_user_input",
+      description: "等待用户输入",
+      schema: z.void(),
+    }
   )
 ];

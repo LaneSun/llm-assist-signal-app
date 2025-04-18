@@ -2,6 +2,7 @@
   import { addChannel } from '$lib/stores.js';
   import * as generators from '$lib/signal_generators.js';
   import { Button } from '$lib/components/ui/button';
+    import Input from '$lib/components/ui/input/input.svelte';
 
   // Available signal types
   const signalTypes = [
@@ -66,22 +67,21 @@
   }
 </script>
 
-<div class="box space-y-4 py-4">
+<div class="box gap-4">
   <form onsubmit={(e) => { e.preventDefault(); generateSignal(); }} class="box space-y-4">
     <div class="grid gap-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="channelName" class="text-sm font-medium">通道名称</label>
-          <input 
+          <Input 
             id="channelName" 
             type="text" 
             bind:value={channelName} 
             required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
           />
         </div>
         
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="signalType" class="text-sm font-medium">信号类型</label>
           <select 
             id="signalType" 
@@ -96,112 +96,104 @@
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="sampleRate" class="text-sm font-medium">采样率 (Hz)</label>
-          <input 
+          <Input 
             id="sampleRate" 
             type="number" 
             bind:value={sampleRate} 
             min="1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
         
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="length" class="text-sm font-medium">长度 (样本数)</label>
-          <input 
+          <Input 
             id="length" 
             type="number" 
             bind:value={length} 
             min="1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
         
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="amplitude" class="text-sm font-medium">幅度</label>
-          <input 
+          <Input 
             id="amplitude" 
             type="number" 
             bind:value={amplitude} 
             step="0.1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
       </div>
       
       {#if selectedSignalType.id === 'sine' || selectedSignalType.id === 'square' || 
            selectedSignalType.id === 'triangle' || selectedSignalType.id === 'sawtooth'}
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="frequency" class="text-sm font-medium">频率 (Hz)</label>
-          <input 
+          <Input 
             id="frequency" 
             type="number" 
             bind:value={frequency} 
             min="0.1" 
             step="0.1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
       {/if}
       
       {#if selectedSignalType.id === 'sine'}
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="phase" class="text-sm font-medium">相位 (弧度)</label>
-          <input 
+          <Input 
             id="phase" 
             type="number" 
             bind:value={phase} 
-            step="0.1" 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            step="0.1"
           />
         </div>
       {/if}
       
       {#if selectedSignalType.id === 'square'}
-        <div class="space-y-2">
+        <div class="box gap-2">
           <label for="dutyCycle" class="text-sm font-medium">占空比 (0-1)</label>
-          <input 
+          <Input 
             id="dutyCycle" 
             type="number" 
             bind:value={dutyCycle} 
             min="0" 
             max="1" 
             step="0.1" 
-            required 
-            class="w-full px-3 py-2 border rounded-md border-input bg-background"
+            required
           />
         </div>
       {/if}
       
       {#if selectedSignalType.id === 'pulse'}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
+          <div class="box gap-2">
             <label for="pulsePosition" class="text-sm font-medium">脉冲 Position (sample)</label>
-            <input 
+            <Input 
               id="pulsePosition" 
               type="number" 
               bind:value={pulsePosition} 
               min="0" 
               max={length-1} 
               required 
-              class="w-full px-3 py-2 border rounded-md border-input bg-background"
             />
           </div>
           
-          <div class="space-y-2">
+          <div class="box gap-2">
             <label for="pulseWidth" class="text-sm font-medium">脉冲 Width (samples)</label>
-            <input 
+            <Input 
               id="pulseWidth" 
               type="number" 
               bind:value={pulseWidth} 
               min="1" 
-              required 
-              class="w-full px-3 py-2 border rounded-md border-input bg-background"
+              required
             />
           </div>
         </div>
