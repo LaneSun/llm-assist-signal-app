@@ -22,7 +22,8 @@ export default defineConfig({
     strictPort: false,
     watch: {
       usePolling: true
-    }
+    },
+    allowedHosts: true
   },
   preview: {
     port: 12000,
