@@ -2,8 +2,9 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatDeepSeek } from '@langchain/deepseek';
 import { get } from 'svelte/store';
-import { llmConfig } from './llmStore';
-import { getOpenAITools, executeToolFunction } from './signalTools';
+import { addMessage, chatHistory, llmConfig } from './llmStore';
+import { signalTools } from './signalTools';
+import { HumanMessage } from '@langchain/core/messages';
 
 /**
  * Create an LLM instance based on the current configuration
@@ -24,7 +25,7 @@ function createLLMInstance() {
     temperature: config.temperature,
     maxTokens: config.maxTokens,
     ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
-  }).bindTools(getOpenAITools());
+  }).bindTools(signalTools);
   
   return llm;
 }
@@ -32,94 +33,26 @@ function createLLMInstance() {
 /**
  * Send a message to the LLM and get a response
  * @param {string} message - User message
- * @param {Array} history - Chat history (optional)
- * @returns {Promise<string>} LLM response
+ * @returns {Promise<void>} LLM response
  */
-export async function sendMessage(message, history = []) {
+export async function sendMessage(message) {
   try {
     const llm = createLLMInstance();
-    const config = get(llmConfig);
-    
-    // Format history for LangChain
-    const formattedHistory = history.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
-    
-    // Add the new message
-    formattedHistory.push({
-      role: 'user',
-      content: message
-    });
+
+    addMessage(new HumanMessage(message));
     
     // Get response from LLM
-    const response = await llm.invoke(formattedHistory);
+    const response = await llm.invoke(get(chatHistory));
     
     // Check if the response contains tool calls
     if (response.tool_calls && response.tool_calls.length > 0) {
-      // Process tool calls
-      const toolResults = [];
-      
       for (const toolCall of response.tool_calls) {
-        try {
-          const { name, arguments: args } = toolCall.function;
-          const parsedArgs = JSON.parse(args);
-          
-          // Execute the tool function
-          const result = await executeToolFunction(name, parsedArgs);
-          toolResults.push({
-            name,
-            result
-          });
-        } catch (error) {
-          toolResults.push({
-            name: toolCall.function.name,
-            error: error.message
-          });
-        }
+        const { name } = toolCall;
+        const tool = signalTools.find(t => t.name === name);
+        const result = await tool.invoke(toolCall);
+        addMessage(result);
       }
-      
-      // Format tool results as markdown
-      let toolResultsMarkdown = "### 执行结果\n\n";
-      toolResults.forEach(result => {
-        if (result.error) {
-          toolResultsMarkdown += `**${result.name}**: 执行失败 - ${result.error}\n\n`;
-        } else {
-          toolResultsMarkdown += `**${result.name}**: ${result.result.message}\n\n`;
-          
-          // Add additional details based on the tool
-          if (result.name === 'generate_signal' || result.name === 'process_signal') {
-            toolResultsMarkdown += `- 通道ID: \`${result.result.channel_id}\`\n`;
-            toolResultsMarkdown += `- 通道名称: ${result.result.name}\n`;
-            toolResultsMarkdown += `- 样本数: ${result.result.length}\n`;
-          } else if (result.name === 'list_channels') {
-            toolResultsMarkdown += "| ID | 名称 | 长度 | 采样率 |\n";
-            toolResultsMarkdown += "|---|------|------|--------|\n";
-            result.result.channels.forEach(channel => {
-              toolResultsMarkdown += `| \`${channel.id}\` | ${channel.name} | ${channel.length} | ${channel.sample_rate} |\n`;
-            });
-          } else if (result.name === 'get_channel_info') {
-            toolResultsMarkdown += `- 通道ID: \`${result.result.id}\`\n`;
-            toolResultsMarkdown += `- 通道名称: ${result.result.name}\n`;
-            toolResultsMarkdown += `- 样本数: ${result.result.length}\n`;
-            toolResultsMarkdown += `- 采样率: ${result.result.sample_rate} Hz\n`;
-            toolResultsMarkdown += `- 处理方法: ${result.result.processing_method || '无'}\n`;
-            toolResultsMarkdown += `- 统计信息:\n`;
-            toolResultsMarkdown += `  - 最小值: ${result.result.stats.min}\n`;
-            toolResultsMarkdown += `  - 最大值: ${result.result.stats.max}\n`;
-            toolResultsMarkdown += `  - 均值: ${result.result.stats.mean}\n`;
-            toolResultsMarkdown += `  - RMS: ${result.result.stats.rms}\n`;
-          }
-          
-          toolResultsMarkdown += "\n";
-        }
-      });
-      
-      // Return the original response content followed by tool results
-      return response.content + "\n\n" + toolResultsMarkdown;
     }
-    
-    return response.content;
   } catch (error) {
     console.error('Error sending message to LLM:', error);
     throw error;
