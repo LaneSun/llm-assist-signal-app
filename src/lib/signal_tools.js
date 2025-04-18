@@ -1,6 +1,6 @@
 import { tool } from '@langchain/core/tools';
-import * as SignalGenerators from './SignalGenerators';
-import * as SignalProcessors from './SignalProcessors';
+import * as SignalGenerators from './signal_generators';
+import * as SignalProcessors from './signal_processors';
 import { addChannel, getChannelById, processChannel, channels } from './stores';
 import { get } from 'svelte/store';
 import { z } from 'zod';

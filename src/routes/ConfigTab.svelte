@@ -1,7 +1,7 @@
 <script>
-  import { defaultConfig, llmConfig } from "../lib/llmStore";
-  import { getAvailableModels, getAvailableProviders } from "../lib/llmService";
-  import { Button } from "../lib/components/ui/button";
+  import { defaultConfig, llmConfig } from "$lib/llm_store";
+  import { getAvailableModels, getAvailableProviders } from "$lib/llm_service";
+  import { Button } from "$lib/components/ui/button";
   import { RotateCcw } from "lucide-svelte";
 
   let formData = $state($llmConfig);

@@ -1,7 +1,7 @@
 <script>
-  import { addChannel } from '../lib/stores.js';
-  import * as generators from '../lib/SignalGenerators.js';
-  import { Button } from '../lib/components/ui/button';
+  import { addChannel } from '$lib/stores.js';
+  import * as generators from '$lib/signal_generators.js';
+  import { Button } from '$lib/components/ui/button';
 
   // Available signal types
   const signalTypes = [

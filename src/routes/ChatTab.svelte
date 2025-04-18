@@ -1,8 +1,8 @@
 <script>
-  import { sendMessage } from "../lib/llmService";
-  import { chatHistory, addMessage } from "../lib/llmStore";
-  import { Button } from "../lib/components/ui/button";
-  import { Card, CardContent } from "../lib/components/ui/card";
+  import { sendMessage } from "$lib/llm_service";
+  import { chatHistory, addMessage } from "$lib/llm_store";
+  import { Button } from "$lib/components/ui/button";
+  import { Card, CardContent } from "$lib/components/ui/card";
   import { Loader2, Send, Trash2 } from "lucide-svelte";
   import { marked } from "marked";
   import { AIMessage } from "@langchain/core/messages";

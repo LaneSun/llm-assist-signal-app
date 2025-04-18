@@ -4,16 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
     "deploy": "NODE_ENV=production vite build && touch dist/.nojekyll"
   },
   "devDependencies": {
+		"@sveltejs/adapter-auto": "^4.0.0",
+		"@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@tailwindcss/vite": "^4.0.0",
     "svelte": "^5.20.2",
-    "svelte-check": "^4.1.6",
-    "vite": "^6.2.0"
+    "vite": "^6.2.5"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.6.13",
@@ -34,8 +39,7 @@
     "shadcn-svelte": "^1.0.0-next.9",
     "svelte-persisted-store": "^0.12.0",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss": "^3.4.1",
-    "tailwindcss-animate": "^1.0.7",
+    "tailwindcss": "^3.0.0",
     "zod": "^3.24.3"
   }
 }

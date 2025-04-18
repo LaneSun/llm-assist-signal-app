@@ -1,10 +1,8 @@
 <script>
   import { onMount, afterUpdate } from "svelte";
-  import { channels, removeChannel } from "../lib/stores.js";
+  import { channels, removeChannel } from "$lib/stores.js";
   import Chart from "chart.js/auto";
-  import Resizable from "./ui/Resizable.svelte";
-  import { Button } from "../lib/components/ui/button";
-  import { Card, CardContent } from "../lib/components/ui/card";
+  import Resizable from "$lib/components/ui/Resizable.svelte";
 
   // Selected channel for detailed view
   export let selectedChannelId = null;

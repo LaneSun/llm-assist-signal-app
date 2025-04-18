@@ -1,7 +1,7 @@
 <script>
-  import { channels, processChannel } from '../lib/stores.js';
-  import * as processors from '../lib/SignalProcessors.js';
-  import { Button } from '../lib/components/ui/button';
+  import { channels, processChannel } from '$lib/stores.js';
+  import * as processors from '$lib/signal_processors.js';
+  import { Button } from '$lib/components/ui/button';
 
   // Available processing methods
   const processingMethods = [

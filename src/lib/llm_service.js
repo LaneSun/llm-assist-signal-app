@@ -2,8 +2,8 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatDeepSeek } from '@langchain/deepseek';
 import { get } from 'svelte/store';
-import { addMessage, chatHistory, llmConfig } from './llmStore';
-import { signalTools } from './signalTools';
+import { addMessage, chatHistory, llmConfig } from './llm_store';
+import { signalTools } from './signal_tools';
 import { HumanMessage } from '@langchain/core/messages';
 
 /**
