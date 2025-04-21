@@ -1,6 +1,6 @@
 <script>
-  import { defaultConfig, llmConfig } from "$lib/llm_store";
-  import { getAvailableModels, getAvailableProviders } from "$lib/llm_service";
+  import { defaultConfig, llmConfig } from "$lib/llm_store.svelte";
+  import { getAvailableModels, getAvailableProviders } from "$lib/llm_service.svelte";
   import { Button } from "$lib/components/ui/button";
   import { RotateCcw } from "lucide-svelte";
     import Input from "$lib/components/ui/input/input.svelte";
@@ -85,7 +85,7 @@
         type="number"
         bind:value={formData.maxTokens}
         min="1"
-        max="4000"
+        max="8000"
       />
     </div>
 

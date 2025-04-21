@@ -1,20 +1,25 @@
 <script>
-  import { sendMessage } from "$lib/llm_service";
-  import { chatHistory, addMessage } from "$lib/llm_store";
+  import { sendMessage } from "$lib/llm_service.svelte";
+  import {
+    chatHistory,
+    clearChatHistory,
+    addMessage,
+  } from "$lib/llm_store.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Card, CardContent } from "$lib/components/ui/card";
   import { Loader2, Send, Trash2 } from "lucide-svelte";
   import { marked } from "marked";
   import { AIMessage } from "@langchain/core/messages";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   let userMessage = $state("");
   let isLoading = $state(false);
   let chatContainer;
+  let chatData = $derived(chatHistory.data);
 
   // Scroll to bottom of chat when messages change
   $effect(() => {
-    $chatHistory.length;
+    chatData.length;
     if (chatContainer) {
       setTimeout(() => {
         chatContainer.scrollTo({
@@ -44,10 +49,6 @@
     }
   }
 
-  function clearChat() {
-    $chatHistory = [];
-  }
-
   // 渲染Markdown内容
   function renderMarkdown(content) {
     try {
@@ -70,7 +71,7 @@
     class="box-scroll overflow-y-auto overflow-x-hidden p-4"
     bind:this={chatContainer}
   >
-    {#if $chatHistory.length <= 1}
+    {#if chatData.length <= 1}
       <!-- 只有系统提示时 -->
       <div
         class="box items-center justify-center h-full text-muted-foreground space-y-4 p-4"
@@ -91,7 +92,7 @@
       </div>
     {:else}
       <div class="box gap-4 text-sm">
-        {#each $chatHistory as message}
+        {#each chatData as message}
           {@const type = message.getType()}
           {#if ["human", "ai"].includes(type)}
             <Card class={type === "human" ? "bg-muted" : "bg-card"}>
@@ -115,7 +116,11 @@
                       </div>
                     {/if}
                     {#if message.tool_calls && message.tool_calls.length > 0}
-                      <div class="text-muted-foreground">{message.tool_calls[0].name === "await_user_input" ? "请求用户输入" : "请求调用工具"}</div>
+                      <div class="text-muted-foreground">
+                        {message.tool_calls[0].name === "await_user_input"
+                          ? "请求用户输入"
+                          : "请求调用工具"}
+                      </div>
                     {/if}
                   </div>
                 </div>
@@ -123,25 +128,22 @@
             </Card>
           {:else if ["tool"].includes(type)}
             <div class="flex-1 self-center box justify-center">
-              <div class="text-muted-foreground">{message.name === "await_user_input" ? "等待用户输入" : "工具调用结束"}</div>
+              <div class="text-muted-foreground">
+                {message.name === "await_user_input"
+                  ? "等待用户输入"
+                  : "工具调用结束"}
+              </div>
             </div>
           {/if}
         {/each}
 
         {#if isLoading}
-          <Card class="text-sm">
-            <CardContent class="p-2">
-              <div class="flex items-center gap-2">
-                <div
-                  class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-primary-foreground text-xs"
-                >
-                  AI
-                </div>
-                <Loader2 class="h-4 w-4 animate-spin" />
-                <span>思考中...</span>
-              </div>
-            </CardContent>
-          </Card>
+          <div class="flex-1 self-center box justify-center">
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <Loader2 class="h-4 w-4 animate-spin" />
+              <span>回复中...</span>
+            </div>
+          </div>
         {/if}
       </div>
     {/if}
@@ -169,11 +171,11 @@
         />
       </div>
       <div class="box gap-2">
-        <Button type="submit" disabled={isLoading || !userMessage.trim()}>
+        <Button type="submit" disabled={isLoading || !userMessage.trim()} enabled={!isLoading}>
           <Send class="h-4 w-4 mr-2" />
           发送
         </Button>
-        <Button type="button" variant="outline" on:click={clearChat}>
+        <Button type="button" variant="outline" onclick={clearChatHistory} enabled={!isLoading}>
           <Trash2 class="h-4 w-4 mr-2" />
           清空
         </Button>

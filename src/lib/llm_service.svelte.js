@@ -2,13 +2,14 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatDeepSeek } from '@langchain/deepseek';
 import { get } from 'svelte/store';
-import { addMessage, chatHistory, llmConfig } from './llm_store';
+import { addMessage, chatHistory, llmConfig } from './llm_store.svelte';
 import { signalTools } from './signal_tools';
-import { HumanMessage } from '@langchain/core/messages';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 /**
  * Create an LLM instance based on the current configuration
- * @returns {Object} LLM instance
+ * @returns {BaseChatModel} LLM instance
  */
 function createLLMInstance() {
   const config = get(llmConfig);
@@ -17,6 +18,7 @@ function createLLMInstance() {
     "openai": ChatOpenAI,
     "anthropic": ChatAnthropic,
     "deepseek": ChatDeepSeek,
+    "openrouter": ChatOpenAI,
   }
 
   const llm = new LLM_MAP[config.provider]({
@@ -24,7 +26,9 @@ function createLLMInstance() {
     modelName: config.model,
     temperature: config.temperature,
     maxTokens: config.maxTokens,
-    ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
+    configuration: {
+      ...provider_configs[config.provider] ?? (config.baseUrl ? { baseURL: config.baseUrl } : {}),
+    },
   }).bindTools(signalTools);
 
   return llm;
@@ -43,18 +47,34 @@ export async function sendMessage(message) {
 
     loop: while (true) {
       // Get response from LLM
-      const response = await llm.invoke(get(chatHistory));
+      const stream = await llm.streamEvents(chatHistory.data, { version: 'v1' });
 
-      addMessage(response);
+      let messages = [];
+      addMessage(new AIMessage(""));
+      let content = "";
+      for await (const event of stream) {
+        if (event.event === "on_llm_stream") {
+          content += event.data.chunk?.content ?? "";
+          chatHistory.data.pop();
+          addMessage(new AIMessage(content));
+        } else if (event.event === "on_llm_end") {
+          chatHistory.data.pop();
+          messages = event.data.output.generations.flat().map(g => g.message);
+        }
+      }
 
-      // Check if the response contains tool calls
-      if (response.tool_calls && response.tool_calls.length > 0) {
-        for (const toolCall of response.tool_calls) {
-          const { name } = toolCall;
-          const tool = signalTools.find(t => t.name === name);
-          const result = await tool.invoke(toolCall);
-          addMessage(result);
-          if (name === "await_user_input") break loop;
+      addMessage(...messages);
+
+      for (const response of messages) {
+        // Check if the response contains tool calls
+        if (response.tool_calls && response.tool_calls.length > 0) {
+          for (const toolCall of response.tool_calls) {
+            const { name } = toolCall;
+            const tool = signalTools.find(t => t.name === name);
+            const result = await tool.invoke(toolCall);
+            addMessage(result);
+            if (name === "await_user_input") break loop;
+          }
         }
       }
     }
@@ -92,6 +112,11 @@ export function getAvailableModels(config) {
         'deepseek-coder'
       ];
 
+    case 'openrouter':
+      return [
+        'mistralai/mistral-small-3.1-24b-instruct:free',
+      ];
+
     default:
       return [];
   }
@@ -105,6 +130,13 @@ export function getAvailableProviders() {
   return [
     { id: 'openai', name: 'OpenAI' },
     { id: 'anthropic', name: 'Anthropic' },
-    { id: 'deepseek', name: 'Deepseek' }
+    { id: 'deepseek', name: 'Deepseek' },
+    { id: 'openrouter', name: 'Open Router' },
   ];
 }
+
+const provider_configs = {
+  "openrouter": {
+    baseURL: 'https://openrouter.ai/api/v1',
+  },
+};
